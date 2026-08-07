@@ -25,15 +25,24 @@ class Settings(BaseSettings):
     # Render must provide this via environment variable (MongoDB Atlas).
     # Example:
     # mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/ecommerce_analytics?retryWrites=true&w=majority
+    #
+    # Compatibility: some deployments use different key names.
+    # We support multiple aliases but keep a single internal setting: MONGODB_URL.
     MONGODB_URL: str | None = None
+    MONGO_URI: str | None = None
+    MONGO_URL: str | None = None
+    DATABASE_URL: str | None = None
+
     DATABASE_NAME: str = "ecommerce_analytics"
+
 
 
     # JWT
     # JWT signing key MUST be provided via environment variable (or .env).
     # If tokens don't work, ensure SECRET_KEY is identical in both token creation and verification.
     # Do not hardcode secrets in source.
-    SECRET_KEY: str
+    SECRET_KEY: str = ""
+
 
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours
@@ -66,9 +75,16 @@ if not settings.SECRET_KEY:
     raise RuntimeError("SECRET_KEY must be set in environment variables or .env")
 
 if not settings.MONGODB_URL:
+    # Support legacy/alternate env var names.
+    settings.MONGODB_URL = settings.MONGO_URI or settings.MONGO_URL or settings.DATABASE_URL
+
+if not settings.MONGODB_URL:
     raise RuntimeError(
-"MONGODB_URL must be set to your MongoDB Atlas connection string (mongodb+srv://...). "
-        "If using Atlas, paste the full mongodb+srv:// URL (including username/password)."
+        "MongoDB connection var must be set. Expected one of: "
+        "MONGODB_URL (preferred), MONGO_URI, MONGO_URL, DATABASE_URL. "
+        "Paste the full mongodb+srv:// URL (including username/password)."
     )
+
+
 
 
