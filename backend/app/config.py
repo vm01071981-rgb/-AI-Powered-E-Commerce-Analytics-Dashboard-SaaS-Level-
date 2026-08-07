@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     # CORS
     # Include all known frontend dev origins (5173/5174) to avoid browser blocks.
-    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:5174,http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:5174,http://localhost:3000,https://ai-powered-e-commerce-analytics.onrender.com"
 
 
     # MongoDB
